@@ -23,10 +23,10 @@ st.sidebar.header("Country Information")
 st.sidebar.write(f"Country: {selected_country}")
 st.sidebar.write(f"Number of Ports: {len(filtered_data)}")
 
-# Create a map
+# Create a map centered at the mean latitude and longitude of the filtered data
 m = folium.Map(location=[filtered_data['LATITUDE'].mean(), filtered_data['LONGITUDE'].mean()], zoom_start=6)
 
-# Add markers for each port
+# Add markers for each port using a loop
 for idx, row in filtered_data.iterrows():
     folium.Marker(
         location=[row['LATITUDE'], row['LONGITUDE']],
@@ -35,4 +35,4 @@ for idx, row in filtered_data.iterrows():
 
 # Display the map
 st.write(f"Ports in {selected_country}:")
-st.write(m)
+st.write(m._repr_html_(), unsafe_allow_html=True)
