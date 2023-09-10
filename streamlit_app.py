@@ -1,32 +1,49 @@
-import pandas as pd
 import streamlit as st
-import folium
-import joblib
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-data = pd.read_csv("world_Port_Index.csv")
+@st.cache_data
+def load_data():
+    return pd.read_csv("world_Port_Index.csv")
 
-model = joblib.load('trained_model.pkl')
+data = load_data()
 
-st.title("World Port Index Visualization")
+st.title("World Port Index Analysis")
 
-st.sidebar.title("Options")
+selected_country = st.selectbox("Select a Country", data['COUNTRY'].unique())
 
-unique_countries = data['COUNTRY'].unique()
-selected_country = st.sidebar.selectbox("Select a Country", unique_countries)
+update_button = st.button("Update Map")
 
-filtered_data = data[data['COUNTRY'] == selected_country]
+if update_button:
+    filtered_data = data[data['COUNTRY'] == selected_country]
 
-st.sidebar.header("Country Information")
-st.sidebar.write(f"Country: {selected_country}")
-st.sidebar.write(f"Number of Ports: {len(filtered_data)}")
+    filtered_gdf = gpd.GeoDataFrame(
+        filtered_data,
+        geometry=gpd.points_from_xy(filtered_data.LONGITUDE, filtered_data.LATITUDE),
+    )
 
-m = folium.Map(location=[filtered_data['LATITUDE'].mean(), filtered_data['LONGITUDE'].mean()], zoom_start=6)
+    st.header(f"Ports in {selected_country}")
+    st.map(filtered_gdf)
 
-for idx, row in filtered_data.iterrows():
-    folium.Marker(
-        location=[row['LATITUDE'], row['LONGITUDE']],
-        popup=row['PORT_NAME']
-    ).add_to(m)
+ports_per_country = data['COUNTRY'].value_counts()
 
-st.write(f"Ports in {selected_country}:")
-st.components.v1.html(m._repr_html_(), width=700, height=700, scrolling=True)
+N = 10
+top_countries = ports_per_country.head(N)
+
+st.header(f"Top {N} Countries with the Most Ports")
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.barplot(x=top_countries.index, y=top_countries.values, ax=ax)
+plt.xticks(rotation=45, ha="right", fontsize=10)
+plt.xlabel("Country", fontsize=12)
+plt.ylabel("Number of Ports", fontsize=12)
+plt.tight_layout()
+
+for i, v in enumerate(top_countries.values):
+    ax.text(i, v, str(v), ha="center", va="bottom", fontsize=10)
+
+st.pyplot(fig)
+
+st.header("Raw Data")
+st.write(data)
