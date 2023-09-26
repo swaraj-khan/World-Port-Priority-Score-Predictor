@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
+import joblib
 import geopandas as gpd
-import matplotlib.pyplot as plt
-import seaborn as sns
+
+loaded_model = joblib.load('priority_score_model.joblib')
 
 @st.cache_data
 def load_data():
@@ -33,17 +34,26 @@ N = 10
 top_countries = ports_per_country.head(N)
 
 st.header(f"Top {N} Countries with the Most Ports")
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.barplot(x=top_countries.index, y=top_countries.values, ax=ax)
-plt.xticks(rotation=45, ha="right", fontsize=10)
-plt.xlabel("Country", fontsize=12)
-plt.ylabel("Number of Ports", fontsize=12)
-plt.tight_layout()
-
-for i, v in enumerate(top_countries.values):
-    ax.text(i, v, str(v), ha="center", va="bottom", fontsize=10)
-
-st.pyplot(fig)
 
 st.header("Raw Data")
 st.write(data)
+    
+def calculate_priority_score(overhd_lim, tide_range):
+    overhd_lim_threshold = 1.0
+    tide_range_threshold = 3  
+    overhd_lim_score = 5 if overhd_lim >= overhd_lim_threshold else (3 if 10 <= overhd_lim < overhd_lim_threshold else 1)
+    tide_range_score = 5 if tide_range >= tide_range_threshold else (3 if 5 <= tide_range < tide_range_threshold else 1)
+
+    priority_score = overhd_lim_score + tide_range_score
+
+    return priority_score
+
+st.title("Priority Score Calculator")
+overhd_lim = st.number_input("What is the Overhead limit of the cruises on your port?:(0-20)", min_value=0.0, max_value=20.0)
+tide_range = st.number_input("What is the Tide Range limit of the cruises on your port?:(0-10)", min_value=0.0, max_value=10.0)
+
+priority_score = calculate_priority_score(overhd_lim, tide_range)
+
+st.write(f"Priority Score: {priority_score}")
+
+
