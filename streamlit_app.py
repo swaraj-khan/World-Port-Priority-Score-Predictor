@@ -7,7 +7,7 @@ loaded_model = joblib.load('priority_score_model.joblib')
 st.image('banner.jpg', width=700)
 @st.cache_data
 def load_data():
-    return pd.read_csv("world_Port_Index.csv")
+    return pd.read_csv("Port.csv")
 
 data = load_data()
 
