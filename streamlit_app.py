@@ -4,7 +4,7 @@ import joblib
 import geopandas as gpd
 
 loaded_model = joblib.load('priority_score_model.joblib')
-
+st.image('banner.jpg', width=700)
 @st.cache_data
 def load_data():
     return pd.read_csv("world_Port_Index.csv")
@@ -33,8 +33,6 @@ ports_per_country = data['COUNTRY'].value_counts()
 N = 10
 top_countries = ports_per_country.head(N)
 
-st.header(f"Top {N} Countries with the Most Ports")
-
 st.header("Raw Data")
 st.write(data)
     
@@ -55,5 +53,3 @@ tide_range = st.number_input("What is the Tide Range limit of the cruises on you
 priority_score = calculate_priority_score(overhd_lim, tide_range)
 
 st.write(f"Priority Score: {priority_score}")
-
-
