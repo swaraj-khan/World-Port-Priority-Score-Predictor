@@ -21,6 +21,8 @@ Dataset - https://www.kaggle.com/datasets/rajkumarpandey02/world-wide-port-index
 
 https://github.com/swaraj-khan/port-index/assets/94361805/2087c717-3f43-40bd-b35d-d0a3a0c6b80b
 
+Check it out here:
+https://world-port-priority-score-predictor-lfx598rfx4tzjjy2rwwjl2.streamlit.app/
 
 ## Features
 
