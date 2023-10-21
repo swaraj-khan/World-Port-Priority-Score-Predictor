@@ -35,7 +35,6 @@ https://world-port-priority-score-predictor-lfx598rfx4tzjjy2rwwjl2.streamlit.app
 ## Installation
 
 To run the World Port Priority Score Predictor locally, follow these steps:
- - git clone https://github.com/swaraj-khan/World-Port-Priority-Score-Predictor.git
  - cd world-port-predictor
  - pip install -r requirements.txt
 
